@@ -2,25 +2,31 @@ package com.jccd.javatests.movies.data;
 
 import com.jccd.javatests.movies.model.Genre;
 import com.jccd.javatests.movies.model.Movie;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.util.Collection;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public class MovieRepositoryJdbc implements MovieRepository {
 
-    private JdbcTemplate jdbcTemplate;
-
-    public MovieRepositoryJdbc(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public Movie findById(long id) {
         Object[] args = {id};
 
-        return jdbcTemplate.queryForObject("SELECT * FROM MOVIES Where id = ?", args, movieMapper);
+        return Optional
+                .ofNullable(jdbcTemplate.queryForObject("SELECT * FROM MOVIES Where id = ?", args, movieMapper))
+                .map(x -> {
+                    assert Objects.nonNull(x.getId());
+                    return x;
+                })
+                .orElse(null);
     }
 
     @Override
