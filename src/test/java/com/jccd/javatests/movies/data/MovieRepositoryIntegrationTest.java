@@ -37,40 +37,51 @@ public class MovieRepositoryIntegrationTest {
     public void load_all_movies() throws SQLException {
         Collection<Movie> movies = movieRepository.findAll();
         assertThat(movies, CoreMatchers.is(Arrays.asList(
-                new Movie(1, "Dark Knight", 152, Genre.ACTION),
-                new Movie(2, "Memento", 113, Genre.THRILLER),
-                new Movie(3, "Matrix", 136, Genre.ACTION),
-                new Movie(4, "Dark Phoenix", 190, Genre.COMEDY))
+                new Movie(1, "Dark Knight", 152, Genre.ACTION,"Mell Gibson"),
+                new Movie(2, "Memento", 113, Genre.THRILLER,"Guillermo del Toro"),
+                new Movie(3, "Matrix", 136, Genre.ACTION,"Camilo Cubillos"),
+                new Movie(4, "Dark Phoenix", 190, Genre.COMEDY, "Tobias Pacheco"),
+                new Movie(5, "Dark Moon", 100, Genre.THRILLER, "Camilo Cubillos"))
         ));
     }
 
     @Test
     public void load_movie_by_id() {
         Movie movie = movieRepository.findById(2);
-        assertThat(movie, CoreMatchers.is(new Movie(2, "Memento", 113, Genre.THRILLER)));
+        assertThat(movie, CoreMatchers.is(new Movie(2, "Memento", 113, Genre.THRILLER,"Guillermo del Toro")));
     }
 
     @Test
     public void load_movie_by_name() {
         Collection<Movie> movies = movieRepository.findByName("dark");
         assertThat(movies, CoreMatchers.is(Arrays.asList(
-                new Movie(1, "Dark Knight", 152, Genre.ACTION),
-                new Movie(4, "Dark Phoenix", 190, Genre.COMEDY))));
+                new Movie(1, "Dark Knight", 152, Genre.ACTION,"Mell Gibson"),
+                new Movie(4, "Dark Phoenix", 190, Genre.COMEDY, "Tobias Pacheco"),
+                new Movie(5, "Dark Moon", 100, Genre.THRILLER, "Camilo Cubillos"))));
     }
 
     @Test
     public void load_movie_by_second_way() {
-        Collection<Movie> movies = movieRepository.findByName("dark");
+        Collection<Movie> movies = movieRepository.findByNameOtherWay("dark");
         assertThat(movies, CoreMatchers.is(Arrays.asList(
-                new Movie(1, "Dark Knight", 152, Genre.ACTION),
-                new Movie(4, "Dark Phoenix", 190, Genre.COMEDY))));
+                new Movie(1, "Dark Knight", 152, Genre.ACTION,"Mell Gibson"),
+                new Movie(4, "Dark Phoenix", 190, Genre.COMEDY, "Tobias Pacheco"),
+                new Movie(5, "Dark Moon", 100, Genre.THRILLER, "Camilo Cubillos"))));
+    }
+
+    @Test
+    public void load_movie_by_director() {
+        Collection<Movie> movies = movieRepository.findByDirector("Camilo Cubillos");
+        assertThat(movies, CoreMatchers.is(Arrays.asList(
+                new Movie(3, "Matrix", 136, Genre.ACTION,"Camilo Cubillos"),
+                new Movie(5, "Dark Moon", 100, Genre.THRILLER, "Camilo Cubillos"))));
     }
 
     @Test
     public void insert_movie() {
-        Movie movie = new Movie (5,"Super 8", 112, Genre.THRILLER);
+        Movie movie = new Movie (6,"Super 8", 112, Genre.THRILLER,"Dua Crack");
         movieRepository.saveOrUpdate(movie);
-        Movie movieFromDB = movieRepository.findById(5);
+        Movie movieFromDB = movieRepository.findById(6);
         assertThat(movieFromDB, CoreMatchers.is(movie));
 
     }

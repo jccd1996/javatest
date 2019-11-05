@@ -4,6 +4,7 @@ import com.jccd.javatests.movies.model.Genre;
 import com.jccd.javatests.movies.model.Movie;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,7 @@ public class MovieRepositoryJdbc implements MovieRepository {
     @Override
     public Collection<Movie> findByName(String name) {
         name = name.toLowerCase();
-        return jdbcTemplate.query("SELECT * FROM MOVIES WHERE LOWER(name) LIKE '%" + name + "%'",movieMapper);
+        return jdbcTemplate.query("SELECT * FROM MOVIES WHERE LOWER(name) LIKE '%" + name + "%'", movieMapper);
     }
 
     @Override
@@ -41,6 +42,12 @@ public class MovieRepositoryJdbc implements MovieRepository {
     }
 
     @Override
+    public Collection<Movie> findByDirector(String name) {
+        name = name.toLowerCase();
+        return jdbcTemplate.query("SELECT * FROM MOVIES WHERE LOWER(director) LIKE '%" + name + "%'", movieMapper);
+    }
+
+    @Override
     public void saveOrUpdate(Movie movie) {
 
         jdbcTemplate.update("INSERT INTO movies (name, minutes, genre) values (?, ?, ?)",
@@ -48,10 +55,11 @@ public class MovieRepositoryJdbc implements MovieRepository {
 
     }
 
-    private static  RowMapper<Movie> movieMapper = (rs, rowNumber) -> new Movie(
-            rs.getInt("id"),
-            rs.getString("name"),
-            rs.getInt("minutes"),
-            Genre.valueOf(rs.getString("genre")));
-
+    private static RowMapper<Movie> movieMapper = (rs, rowNum) ->
+            new Movie(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getInt("minutes"),
+                    Genre.valueOf(rs.getString("genre")),
+                    rs.getString("director"));
 }
